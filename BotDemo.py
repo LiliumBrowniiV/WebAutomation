@@ -8,7 +8,7 @@ import calendar
 from datetime import datetime
 
 options = Options()
-service = Service( executable_path="D:\workspace\python.dev\pyautobot\chromedriver.exe")
+service = Service( executable_path="your_path")
 options.add_experimental_option("detach", True)
 driver = webdriver.Chrome( 
 service = service,
@@ -53,15 +53,15 @@ def startDrive():
 
 
     captcha_img = driver.find_element("xpath", "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[3]/td[2]/img")
-    captcha_img.screenshot('D:\workspace\python.dev\pyautobot\captchas\captcha1.png')
+    captcha_img.screenshot('your_path')
 
 
-    api_key = os.getenv('APIKEY_2CAPTCHA', '65504a5cbb2a07db50a125097bcc0c51')
+    api_key = os.getenv('APIKEY_2CAPTCHA', 'your_key')
 
     solver = TwoCaptcha(api_key)
 
     try:
-        result = solver.normal('D:\workspace\python.dev\pyautobot\captchas\captcha1.png')
+        result = solver.normal('your_path')
 
     except Exception as e:
         print(e)

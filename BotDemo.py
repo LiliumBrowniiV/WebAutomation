@@ -1,16 +1,17 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from twocaptcha import TwoCaptcha
+import time
 import os 
 import calendar
 from datetime import datetime
 
 options = Options()
+service = Service( executable_path="D:\workspace\python.dev\pyautobot\chromedriver.exe")
 options.add_experimental_option("detach", True)
 driver = webdriver.Chrome( 
-service = Service(ChromeDriverManager().install()),
+service = service,
 options = options)
 
 def getTime():
@@ -22,11 +23,11 @@ def getTime():
     monthrange = calendar.monthrange(year, month)
     if day + 8 > monthrange[1]:
         month = str(month + 1).zfill(2)
-        day   = str(day - monthrange[1]).zfill(2)
+        day   = str(day + 8 - monthrange[1]).zfill(2)
     elif day + 8 > monthrange[1] and month == 12:
         year  = str(year + 1) 
         month = str(1).zfill(2)
-        day   = str(day - monthrange[1]).zfill
+        day   = str(day + 8 - monthrange[1]).zfill(2)
     else:
         year  = str(year).zfill(4)
         month = str(month).zfill(2)
@@ -52,7 +53,7 @@ def startDrive():
 
 
     captcha_img = driver.find_element("xpath", "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[3]/td[2]/img")
-    captcha_img.screenshot('captchas/captcha.png')
+    captcha_img.screenshot('D:\workspace\python.dev\pyautobot\captchas\captcha1.png')
 
 
     api_key = os.getenv('APIKEY_2CAPTCHA', '65504a5cbb2a07db50a125097bcc0c51')
@@ -60,7 +61,7 @@ def startDrive():
     solver = TwoCaptcha(api_key)
 
     try:
-        result = solver.normal('captchas/captcha1.png')
+        result = solver.normal('D:\workspace\python.dev\pyautobot\captchas\captcha1.png')
 
     except Exception as e:
         print(e)
@@ -70,8 +71,9 @@ def startDrive():
 
 def process(code, year, month, day):
     driver.find_element("xpath", "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[3]/td[2]/input").send_keys(code)
+    driver.find_element("xpath", "/html/body/div[2]/div/div[3]/button[1]").click()
     driver.find_element("xpath", "/html/body/table[2]/tbody/tr/td/form/table/tbody/tr[4]/td/input").click()
-    """
+
     now = datetime.now()
     hour = now.strftime("%H")
     min  = now.strftime("%M")
@@ -80,15 +82,21 @@ def process(code, year, month, day):
     time.sleep(((59 - int(min)) * 60) + (59 - int(sec)) + 1)
     DoneTime = datetime.now()
     print("Done Time", DoneTime.strftime("%H:%M:%S"))
-    """
+
     driver.get("https://fe.xuanen.com.tw/fe01.aspx?module=net_booking&files=booking_place&StepFlag=2&PT=1&D="+year+"/"+month+"/"+day+"&D2=1")
     driver.find_element("xpath", "/html/body/table[1]/tbody/tr[3]/td/div/form/table/tbody/tr/td/span/div/table/tbody/tr[2]/td/span/table/tbody/tr[27]/td[3]/img").click()
     driver.switch_to.alert.accept()
-
+    time.sleep(600)
 
 def main():
     year, month, day = getTime()
     process(startDrive(), year, month, day)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+        time.sleep(600)   
+    except Exception as e:
+        print(e)
+        print("fuck me")
+        time.sleep(600)   
